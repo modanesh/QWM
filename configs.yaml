@@ -1,0 +1,153 @@
+defaults:
+
+  run_name: 'none'
+  seed: 0
+  deterministic_run: False
+  log_every: 1e3
+  reset_every: 0
+  device: 'cuda:0'
+  compile: True
+  precision: 32
+  log_enabled: True
+  test: False
+  record_video: False
+  per_robot_reward_ema_alpha: 1e-2
+
+  # Environment
+  task: 'Isaac-Velocity-Flat-HeteroQuadruped-v0'
+  size: [ 64, 64 ]
+  time_limit: 1000
+  action_repeat: 1
+
+  # Model
+  dyn_hidden: 512
+  dyn_deter: 512
+  dyn_stoch: 32
+  dyn_discrete: 32
+  dyn_rec_depth: 1
+  dyn_mean_act: 'none'
+  dyn_std_act: 'sigmoid2'
+  dyn_min_std: 0.1
+  grad_heads: [ 'decoder', 'reward', 'cont' ]
+  units: 512
+  act: 'SiLU'
+  norm: True
+  encoder:
+    { mlp_keys: '.*', act: 'SiLU', norm: True, mlp_layers: 6, mlp_units: 1536, symlog_inputs: True }
+  decoder:
+    { mlp_keys: '.*', act: 'SiLU', norm: True, mlp_layers: 6, mlp_units: 1536, vector_dist: symlog_mse, outscale: 1.0 }
+  actor:
+    { layers: 3, dist: 'normal', entropy: 3e-4, unimix_ratio: 0.01, std: 'learned', min_std: 0.1, max_std: 2.0, temp: 0.1, lr: 3e-5, eps: 1e-5, grad_clip: 100.0, outscale: 1.0 }
+  critic:
+    { layers: 3, dist: 'symlog_disc', slow_target: True, slow_target_update: 1, slow_target_fraction: 0.02, lr: 3e-5, eps: 1e-5, grad_clip: 100.0, outscale: 0.0 }
+  reward_head:
+    { layers: 4, dist: 'symlog_disc', loss_scale: 1.0, outscale: 1.0, units: 512 }
+  cont_head:
+    { layers: 3, loss_scale: 1.0, outscale: 1.0 }
+  dyn_scale: 0.5
+  rep_scale: 0.1
+  kl_free: 1.0
+  weight_decay: 0.0
+  unimix_ratio: 0.01
+  initial: 'learned'
+  model_lr: 1e-4
+  opt: 'adam'
+  grad_clip: 1000
+
+  # Behavior.
+  discount: 0.95
+  discount_lambda: 0.95
+  imag_horizon: 15
+  imag_gradient: 'dynamics'
+  imag_gradient_mix: 0.0
+  eval_state_mean: False
+
+  # Exploration
+  expl_until: 0
+  expl_extr_scale: 0.0
+  expl_intr_scale: 1.0
+  disag_target: 'stoch'
+  disag_log: True
+  disag_models: 10
+  disag_offset: 1
+  disag_layers: 4
+  disag_units: 400
+  disag_action_cond: False
+
+  # Robots
+  num_actions: 12
+  quadrupeds_action_scale:
+    anymal_d: 0.5
+    anymal_c: 0.5
+    anymal_b: 0.5
+    unitree_a1: 0.25
+    unitree_go1: 0.25
+    unitree_go2: 0.25
+    unitree_b2: 0.5
+    spot: 0.2
+  quadrupeds_action_offset:
+    anymal_d: [ 0., 0., 0., 0., 0.4, -0.4, 0.4, -0.4, -0.8, 0.8, -0.8, 0.8 ]
+    anymal_c: [ 0., 0., 0., 0., 0.4, -0.4, 0.4, -0.4, -0.8, 0.8, -0.8, 0.8 ]
+    anymal_b: [ 0., 0., 0., 0., 0.4, -0.4, 0.4, -0.4, -0.8, 0.8, -0.8, 0.8 ]
+    unitree_a1: [ 0.1, 0.1, -0.1, -0.1, 0.8, 1.0, 0.8, 1.0, -1.5, -1.5, -1.5, -1.5 ]
+    unitree_go1: [ 0.1, 0.1, -0.1, -0.1, 0.8, 1.0, 0.8, 1.0, -1.5, -1.5, -1.5, -1.5 ]
+    unitree_go2: [ 0.1, 0.1, -0.1, -0.1, 0.8, 1.0, 0.8, 1.0, -1.5, -1.5, -1.5, -1.5 ]
+    unitree_b2: [ 0.25, 0.25, -0.25, -0.25, 0.6, 0.6, 0.6, 0.6, -1.0, -1.0, -1.0, -1.0 ]
+    spot: [ 0.1, 0.1, -0.1, -0.1, 0.9, 1.1, 0.9, 1.1, -1.5, -1.5, -1.5, -1.5 ]
+  quadrupeds_types:  # used for heterogeneous env
+    anymal_d: 0
+    anymal_c: 1
+    anymal_b: 2
+    unitree_a1: 3
+    unitree_go1: 4
+    unitree_go2: 5
+    unitree_b2: 6
+    spot: 7
+
+  # USD configs
+  usd_dir: './assets/usds'  # Path to directory containing USD files
+  inject_usd_to_encoder: 'tower'
+  usd_tower_ratio: 0.5  # ratio of USD tower size to main encoder size
+
+  domain_randomization: False
+
+hetero_quadruped_proprio_base:
+  quadrupeds: [ 'anymal_d', 'anymal_c', 'anymal_b', 'unitree_a1', 'unitree_go1', 'unitree_go2', 'unitree_b2', 'spot' ]
+  headless: True
+  opt_eps: 1e-6
+  policy_action_scale: 3
+  steps: 70000
+  envs: 4096
+  dataset_size: 8192000
+  prefill: 409600
+  batch_size: 32
+  batch_length: 32
+  train_ratio: 4096
+  pretrain: 100
+  run_group: 'WM'
+
+hetero_quadruped_proprio_debug:
+  run_name: 'debug'
+  #  quadrupeds: [ 'anymal_d', 'unitree_b2' ]
+  steps: 50000  # Total number of environment steps to train for.
+  envs: 10
+  dataset_size: 2200  # Must be a multiple of envs
+  prefill: 200  # The number of total environment steps to collect with a random policy before training starts. Must be >= batch_size * batch_length. Must be a multiple of envs.
+  batch_size: 16
+  batch_length: 10
+  train_ratio: 128  # Training happens every `(batch_size * batch_length) / train_ratio` environment steps. With train_ratio=64, batch_size=16, and batch_length=16, the agent trains every 4 environment steps.
+  pretrain: 100  # The number of gradient updates to perform on the initial prefill data.
+  log_enabled: False
+
+hetero_quadruped_proprio_exp:
+  run_name: 'hetero_quadruped_proprio'
+  domain_randomization: True
+
+  dyn_deter: 768
+  dyn_stoch: 48
+  dyn_discrete: 48
+  train_ratio: 8192
+  batch_length: 64
+  weight_decay: 1e-4
+  kl_free: 1.5
+  grad_clip: 100
