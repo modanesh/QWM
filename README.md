@@ -1,5 +1,11 @@
 # 🚀 Toward Hardware-Agnostic Quadrupedal World Models via Morphology Conditioning (QWM)
 
+[![Conference](https://img.shields.io/badge/CoRL%202026-Accepted-6a7ba2.svg)](https://www.corl.org/)
+[![arXiv](https://img.shields.io/badge/arXiv-2604.08780-b31b1b.svg)](https://arxiv.org/abs/2604.08780)
+[![Project Page](https://img.shields.io/badge/Project-Page-4c8bf5.svg)](https://modanesh.github.io/papers/qwm/)
+
+> **🎉 Accepted at the Conference on Robot Learning (CoRL) 2026.**
+
 This repository contains the official PyTorch implementation of **Quadrupedal World Models (QWM)**, a framework designed to transition world models from hardware-locked specialists to physics-grounded generalists.
 
 By explicitly conditioning the generative dynamics on a robot's engineering specifications (extracted from USD files), QWM enables a single model to master locomotion across a highly heterogeneous fleet of quadrupeds (e.g., ANYmal, Unitree, Spot). This capability unlocks the ability to deploy zero-shot control on entirely unseen quadrupeds without requiring fine-tuning, adaptation, or dangerous real-world warm-up periods.
@@ -91,11 +97,12 @@ Configurations can be modified in `configs.yaml`. Logs, model checkpoints, and t
 If you find this code or research helpful in your work, please cite the paper:
 
 ```bibtex
-@article{danesh2024qwm,
+@inproceedings{danesh2026qwm,
   title={Toward Hardware-Agnostic Quadrupedal World Models via Morphology Conditioning},
   author={Danesh, Mohamad H. and Li, Chenhao and Abyaneh, Amin and Houssaini, Anas and Ellis, Kirsty and Berseth, Glen and Hutter, Marco and Lin, Hsiu-Chin},
-  journal={TBD},
-  year={2026}
+  booktitle={Conference on Robot Learning (CoRL)},
+  year={2026},
+  url={https://arxiv.org/abs/2604.08780}
 }
 
 ```
